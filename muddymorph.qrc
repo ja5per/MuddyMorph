@@ -1,0 +1,15 @@
+<RCC>
+  <qresource prefix="stilo">
+    <file>guicandy/icon.png</file>
+    <file>guicandy/logo.png</file>
+    <file>guicandy/missing.png</file>
+    <file>guicandy/t1.png</file>
+    <file>guicandy/t2.png</file>
+    <file>guicandy/t3.png</file>
+    <file>guicandy/t4.png</file>
+    <file>guicandy/t5.png</file>
+    <file>guicandy/t6.png</file>
+    <file>guicandy/t7.png</file>
+    <file>guicandy/wait.png</file>
+  </qresource>
+</RCC>

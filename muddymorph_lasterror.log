@@ -1,0 +1,30 @@
+MuddyMorph Error Report
+Sun Oct 29 14:16:20 2017
+
+OSError
+
+cannot write mode RGBA as JPEG
+
+Traceback (most recent call last):
+  File "/Users/jasper/anaconda/lib/python3.5/site-packages/PIL/JpegImagePlugin.py", line 602, in _save
+    rawmode = RAWMODE[im.mode]
+KeyError: 'RGBA'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/jasper/Documents/PythonSpul/muddymorph/muddymorph.py", line 1981, in run
+    X=self.X, Y=self.Y, G=self.G)
+  File "/Users/jasper/Documents/PythonSpul/muddymorph/muddymorph_go.py", line 1310, in motion
+    com_a=com_a, com_b=com_b, V=V, G=G, backfade=backfade)
+  File "/Users/jasper/Documents/PythonSpul/muddymorph/muddymorph_go.py", line 1157, in inbetween
+    algo.save_rgba(T, fullfile, qual)
+  File "/Users/jasper/Documents/PythonSpul/muddymorph/muddymorph_algo.py", line 351, in save_rgba
+    img.save(imagefile, quality=quality)
+  File "/Users/jasper/anaconda/lib/python3.5/site-packages/PIL/Image.py", line 1893, in save
+    save_handler(self, fp, filename)
+  File "/Users/jasper/anaconda/lib/python3.5/site-packages/PIL/JpegImagePlugin.py", line 604, in _save
+    raise IOError("cannot write mode %s as JPEG" % im.mode)
+OSError: cannot write mode RGBA as JPEG
+
+

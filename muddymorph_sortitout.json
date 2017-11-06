@@ -1,0 +1,9 @@
+{
+    "folder_in"      : "/Users/jasper/Movies/Project/GRR/Sketsj/scaled",
+    "folder_out"     : "/Users/jasper/Movies/Project/GRR/Sketsj/sorted",
+    "file_filter"    : "*.jpg",
+    "thumbnail_size" : 400,
+    "maxit_n"        : 100000,
+    "maxit_t"        : 600,
+    "gamma"          : 0.5
+}
