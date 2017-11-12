@@ -4,10 +4,10 @@ block_cipher = None
 
 
 a = Analysis(['MuddyMorph.py'],
-             pathex=['/Users/jasper/Documents/PythonSpul/muddymorph'],
+             pathex=['/Users/jasper/Documents/PythonSpul/MuddyMorph'],
              binaries=[],
              datas=[],
-             hiddenimports=['_sysconfigdata_m_darwin_'],
+             hiddenimports=[],
              hookspath=[],
              runtime_hooks=[],
              excludes=[],
