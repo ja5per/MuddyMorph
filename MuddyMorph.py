@@ -74,6 +74,8 @@ class Gui(QMainWindow):
 
         print(gogo.timestamp() + 'Temporary file path is ' + \
               self.settings['temppath'])
+        if not path.exists(self.settings['temppath']):
+            gogo.init_temp(self.settings)
 
         # Remember the key frame directory from last time
         keys = self.settings['keyframes']
@@ -924,12 +926,13 @@ class Gui(QMainWindow):
                filter    = "Images (*.png *.jpg)\nAll files (*.*)")
 
         if not path.isfile(f):
-            print('Abort')
-            return
+            f, name = '', ''
+            print('None')
+        else:
+            name, _ = path.splitext(path.basename(f))
+            print(name)           
 
         self.showTabs(2)
-        name, _ = path.splitext(path.basename(f))
-        print(name)
         self.settings['render']['backdrop'] = f
         self.ui.buttonBackdrop.setText(name)
         self.showBackdrop()
@@ -959,6 +962,10 @@ class Gui(QMainWindow):
                 return
 
             if self.B is None: self.B = algo.load_rgba(fi)
+
+        else:
+            self.B = None
+            self.ui.buttonBackdrop.setText('Select file ...')
 
         clr   = self.settings['render']['backcolor'  ]
         trans = self.settings['render']['transparent']
@@ -1205,7 +1212,7 @@ class Gui(QMainWindow):
         """
         m    = self.ui.tableTraject.currentIndex().row()
         st   = self.settings['traject']
-        se   = self.settings['edge']
+        se   = self.settings['edge'   ]
         a, b = gogo.morph_key_indices(self.settings, m)
 
         st['corners'      ][m] = self.ui.checkCorners   .isChecked()
@@ -1213,6 +1220,7 @@ class Gui(QMainWindow):
         st['arc'          ][m] = self.ui.checkArc       .isChecked()
         st['spin'         ][m] = self.ui.checkSpin      .isChecked()
 
+        st['detail'       ][m] = self.ui.spinDetail     .value()
         st['maxpoints'    ][m] = self.ui.spinMaxPoints  .value()
         st['neighbours'   ][m] = self.ui.spinNeighbours .value()
         st['similim'      ][m] = self.ui.spinSimiLim    .value()
@@ -1220,8 +1228,6 @@ class Gui(QMainWindow):
 
         se['cornercatcher'][a] = str(self.ui.comboCornerCatcher.currentText())
         se['cornercatcher'][b] = str(self.ui.comboCornerCatcher.currentText())
-        se['detail'       ][a] = self.ui.spinDetail.value()
-        se['detail'       ][b] = self.ui.spinDetail.value()
 
 
     def switchTraject(self):
@@ -1236,9 +1242,7 @@ class Gui(QMainWindow):
         st     = self.settings['traject']
         se     = self.settings['edge'   ]
         a, b   = gogo.morph_key_indices(self.settings, m)
-        detail = int(0.5 * se['detail'][a] + \
-                     0.5 * se['detail'][b])
-
+        
         # Spinning only makes sense in case of arcs
         if not st['arc'][m]: st['spin'][m] = False
 
@@ -1252,7 +1256,7 @@ class Gui(QMainWindow):
         self.ui.checkSpin      .setChecked(st['spin'      ][m])
         self.ui.spinSimiLim    .setValue  (st['similim'   ][m])
         self.ui.spinMaxMove    .setValue  (st['maxmove'   ][m])
-        self.ui.spinDetail     .setValue  (detail)
+        self.ui.spinDetail     .setValue  (st['detail'    ][m])
 
         t = se['cornercatcher'][a]
         i = self.ui.comboCornerCatcher.findText(t)

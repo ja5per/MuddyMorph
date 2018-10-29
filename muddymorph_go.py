@@ -152,7 +152,6 @@ def default_settings():
               'channel'       : 'lightness',
               'threshold'     : 20         , # 1 - 100 percent
               'blur'          : 0          , # 0 - 100 pixels
-              'detail'        : 20         , # >= 1 promille
               'cornercatcher' : 'ORB'      }
     
     # Keypoint trajectories and node trajectories
@@ -161,6 +160,7 @@ def default_settings():
                  'silhouette' : True ,
                  'spin'       : True ,
                  'arc'        : True ,
+                 'detail'     : 20   , # >=1 promille
                  'similim'    : 30   , # 0 - 100 percent
                  'maxmove'    : 20   , # 1 - 100 percent
                  'neighbours' : 10   , # >= 1 points
@@ -705,10 +705,13 @@ def abs_detail(settings, m, h=None, w=None):
     
     if not h or not w: h, w = fetch_dimensions(settings)
     
-    a, b   = morph_key_indices(settings, m)
-    se     = settings['edge']
-    detail = 0.5 * se['detail'][a] * 1e-3 + \
-             0.5 * se['detail'][b] * 1e-3
+    detail = settings['traject']['detail'][m] * 1e-3
+
+    # FIXME: Remove this after testing new traject detail parameter
+    #a, b   = morph_key_indices(settings, m)
+    #se     = settings['edge']
+    #detail = 0.5 * se['detail'][a] * 1e-3 + \
+    #         0.5 * se['detail'][b] * 1e-3
     
     r = min(int(np.ceil(max(h, w) * detail)) + 1, 4)
     
@@ -904,9 +907,11 @@ def trajectory(settings, m, recycle=False, thread=None, X=None, Y=None,
         return nodes, Ka, Kb, com_a, com_b
     
     # Convert detail zone units from promille to pixels
-    se       = settings['edge'  ]
-    detail   = 0.5 * se['detail'][a] * 1e-3 + \
-               0.5 * se['detail'][b] * 1e-3
+    # FIXME: Remove this after testing new traject detail setting
+    #se       = settings['edge'  ]
+    #detail   = 0.5 * se['detail'][a] * 1e-3 + \
+    #           0.5 * se['detail'][b] * 1e-3
+    detail = settings['traject']['detail'][m] * 1e-3
     simisize = max(int(np.ceil(max(Ka.shape[:2]) * detail)) + 1, 4)
     
     # Show the nitty gritty details
@@ -941,8 +946,9 @@ def trajectory(settings, m, recycle=False, thread=None, X=None, Y=None,
         if Ka is None: Ka = algo.load_rgba(settings['keyframes'][a])
         if Kb is None: Kb = algo.load_rgba(settings['keyframes'][b])
         
-        catch_a = path.join(folder_a, se['cornercatcher'][a].lower())
-        catch_b = path.join(folder_b, se['cornercatcher'][b].lower())
+        catcher = settings['edge']['cornercatcher']
+        catch_a = path.join(folder_a, catcher[a].lower())
+        catch_b = path.join(folder_b, catcher[b].lower())
         
         if kp_a is None: kp_a = loadit(catch_a + '.csv')
         if kp_b is None: kp_b = loadit(catch_b + '.csv')
@@ -972,11 +978,14 @@ def trajectory(settings, m, recycle=False, thread=None, X=None, Y=None,
                                         neighbours=neighbours, n=n_half,
                                         simisize=simisize, similim=similim)
         
-        nodes4 = np.row_stack((nodes2, nodes3[:, [2, 3, 0, 1]]))
-        simi4 = np.append(simi2, simi3)
+        try:
+            nodes4 = np.row_stack((nodes2, nodes3[:, [2, 3, 0, 1]]))
+            simi4 = np.append(simi2, simi3)
+        except IndexError:
+            nodes4, simi4 = nodes2, simi2
         if thread and thread.abort: return
     
-    # Combine the results. One big happy family bla bla bla.
+    # Combine the results. One big happy family!
     if dosilhouette and docorners:
         nodez = np.row_stack((nodes1, nodes4))
         simiz = np.append(simi1, simi4)
@@ -1087,7 +1096,7 @@ def blobbify(settings, nodes, com_a, com_b, m, h=None, w=None):
     diago      = np.ceil(np.sqrt(h ** 2 + w ** 2))
     r_max      = int(diago)
     minsize    = abs_detail(settings, m, h, w)
-    scale      = settings['render']['blobscale'] / 100.
+    scale      = settings['render' ]['blobscale' ] / 100.
     neighbours = settings['traject']['neighbours'][m]
     
     radii = algo.inflate_blobs(nodes, scale, minsize,

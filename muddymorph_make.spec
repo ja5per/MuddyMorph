@@ -10,7 +10,7 @@ a = Analysis(['MuddyMorph.py'],
              pathex=[SPECPATH],
              binaries=[],
              datas=[],
-             hiddenimports=['scipy._lib.messagestream'],
+             hiddenimports=['pywt._extensions._cwt'],
              hookspath=[],
              runtime_hooks=[],
              excludes=[],
@@ -39,8 +39,10 @@ coll = COLLECT(exe,
                upx   = False,
                name  = 'MuddyMorph')
 
-#app = BUNDLE(coll,
-#             name='MuddyMorph.app',
-#             icon='guicandy/muddymorph.icns',
-#             bundle_identifier=None,
-#             info_plist={'NSHighResolutionCapable': 'True'})
+app = BUNDLE(coll,
+             name='MuddyMorph.app',
+             icon='guicandy/muddymorph.icns',
+             bundle_identifier=None,
+             info_plist={'NSHighResolutionCapable': 'True'})
+
+# Try this extra hidden import if errors persist: 'scipy._lib.messagestream'
